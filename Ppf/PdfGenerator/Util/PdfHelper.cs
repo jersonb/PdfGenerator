@@ -1,142 +1,74 @@
 ﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
-using PdfGenerator.Models;
 using System.IO;
 
 namespace PdfGenerator.Util
 {
     public class PdfHelper
     {
+        #region Properties
+        internal float CurrentPosition
+        {
+            get
+            {
+                return GetCurrentPosition();
+            }
+        }
+
+        internal float NextPosition
+        {
+            get
+            {
+                return GetNextPosition();
+            }
+        }
+
+        public float InitialPosition { get; set; }
+
         private readonly Document _doc;
         private readonly PdfContentByte _contentByte;
+        #endregion
 
-        public string NameFont { private get; set; }
-        public int SizeFont { private get; set; }
-
-        internal PdfHelper(Document doc, PdfWriter pdf)
+        internal PdfHelper(Document doc, MemoryStream ms)
         {
             this._doc = doc;
+            var pdf = PdfWriter.GetInstance(doc, ms);
+            pdf.CloseStream = false;
+            this._doc.Open();
             this._contentByte = pdf.DirectContent;
         }
 
-        internal void NewPage(HeaderFooterConfig header, HeaderFooterConfig footer)
+        #region Text
+        internal void TextCenter(string text, string nameFont, int sizeFont, float positionX, float positionY)
         {
-            _doc.NewPage();
-
-            SetHeader(header);
-            SetFooter(footer);
-        }
-
-
-        internal void SetHeader(HeaderFooterConfig config)
-        {
-
-            if (config.ShowBoarder)
-            {
-                var spacing = config.Spacing != 0 ? config.Spacing : 1f;
-                var boarderWidth = config.BoarderWidth != 0 ? config.BoarderWidth : 1;
-                var radius = config.BoardRadius != 0 ? config.BoardRadius : 0;
-                var lowerLeftX = config.LowerLeftX != 0 ? config.LowerLeftX : (_doc.RightMargin - spacing);
-                var lowerLeftY = config.LowerLeftY != 0 ? config.LowerLeftY : (_doc.PageSize.Height - _doc.TopMargin - spacing);
-                var widthRectangle = config.WidthRectangle != 0 ? config.WidthRectangle : (_doc.Right - _doc.RightMargin - spacing);
-                var heigthRectangle = config.HeigthRectangle != 0 ? config.HeigthRectangle : (_doc.TopMargin - spacing);
-                var backColor = config.BackColor ?? BaseColor.WHITE;
-                var boarderColor = config.BackColor ?? BaseColor.BLACK;
-
-                Rectangle(lowerLeftX, lowerLeftY, widthRectangle, heigthRectangle, boarderWidth, radius, boarderColor, backColor);
-            }
-
-            if (config.Logo != null)
-            {
-                AddImageToHeader(config.Logo);
-            }
-
-        }
-
-        private void AddImageToHeader(Image image)
-        {
-            image.ScaleToFit(image.Width, image.Height);
-            image.SetAbsolutePosition(0, _doc.PageSize.Height - _doc.TopMargin);
-            this._doc.Add(image);
-        }
-
-        internal void SetFooter(HeaderFooterConfig config)
-        {
-            if (config.ShowBoarder)
-            {
-                var spacing = config.Spacing != 0 ? config.Spacing : 1f;
-                var boarderWidth = config.BoarderWidth != 0 ? config.BoarderWidth : 1;
-                var radius = config.BoardRadius != 0 ? config.BoardRadius : 0;
-                var lowerLeftX = config.LowerLeftX != 0 ? config.LowerLeftX : (_doc.RightMargin - spacing);
-                var lowerLeftY = spacing;
-                var widthRectangle = config.WidthRectangle != 0 ? config.WidthRectangle : (_doc.Right - _doc.RightMargin - spacing);
-                var heigthRectangle = config.HeigthRectangle != 0 ? config.HeigthRectangle : (_doc.BottomMargin - spacing);
-                var backColor = config.BackColor ?? BaseColor.WHITE;
-                var boarderColor = config.BackColor ?? BaseColor.BLACK;
-
-                Rectangle(lowerLeftX, lowerLeftY, widthRectangle, heigthRectangle, boarderWidth, radius, boarderColor, backColor);
-
-            }
-
-            if (config.Logo != null)
-            {
-                AddImageToFooter(config.Logo);
-            }
-
-        }
-      
-        private void AddImageToFooter(Image image)
-        {
-            image.ScaleToFit(image.Width, image.Height);
-            image.SetAbsolutePosition(0,0);
-            this._doc.Add(image);
-        }
-
-        internal BaseFont GetFont(string font)
-        {
-            return BaseFont.CreateFont(font, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
-        }
-
-        internal BaseFont GetFont()
-        {
-            return BaseFont.CreateFont(this.NameFont ?? BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
-        }
-
-
-
-
-        internal void AddImage(string path, float fitWidth, float fitHeight, float absoluteX, float absoluteY)
-        {
-            var st = File.Open(path, FileMode.Open);
-
-            var image = Image.GetInstance(st);
-            image.ScaleToFit(fitWidth, fitHeight);
-            image.SetAbsolutePosition(absoluteX, absoluteY);
-            this._doc.Add(image);
-        }
-
-        internal void AddImage(Image image, float fitWidth, float fitHeight, float absoluteX, float absoluteY)
-        {
-            image.ScaleToFit(fitWidth, fitHeight);
-            image.SetAbsolutePosition(absoluteX, absoluteY);
-            this._doc.Add(image);
-        }
-
-        internal void TextColumn(string text, string nameFont, int sizeFont, float xInfEsq, float yInfEsq, float xSupDir, float ySupDir)
-        {
-            var ct = new ColumnText(this._contentByte);
-
-            ct.SetSimpleColumn(xInfEsq, yInfEsq, xSupDir, ySupDir);
-            ct.AddElement(TextJustified(text, nameFont, sizeFont));
-            ct.Go();
-        }
-
-        internal void Rectangle(float xInit, float yInit, float width, float height, float widthLine, float radius)
-        {
+            var font = GetFont(nameFont);
             this._contentByte.SetColorFill(BaseColor.BLACK);
-            this._contentByte.RoundRectangle(xInit, yInit, width, height, radius);
-            this._contentByte.SetLineWidth(widthLine);
-            this._contentByte.Stroke();
+            this._contentByte.SetFontAndSize(font, sizeFont);
+            this._contentByte.BeginText();
+            this._contentByte.ShowTextAligned(Element.ALIGN_CENTER, text, positionX, positionY, 0);
+            this._contentByte.EndText();
+        }
+
+        internal void TextLeft(string text, string nameFont, int sizeFont, float positionX, float positionY)
+        {
+            var bf = GetFont(nameFont);
+            this._contentByte.SetColorFill(BaseColor.BLACK);
+            this._contentByte.SetFontAndSize(bf, sizeFont);
+            this._contentByte.BeginText();
+            this._contentByte.ShowTextAligned(Element.ALIGN_LEFT, text, positionX, positionY, 0);
+            this._contentByte.EndText();
+
+        }
+
+        private BaseFont GetFont(string font) => BaseFont.CreateFont(font, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+        #endregion
+
+        #region Image and formats
+        internal void AddImage(Image image, float absoluteX, float absoluteY)
+        {
+            image.ScaleToFit(image.Width, image.Height);
+            image.SetAbsolutePosition(absoluteX, absoluteY);
+            this._doc.Add(image);
         }
 
         internal void Rectangle(float xInit, float yInit, float width, float height, float widthLine, float radius, BaseColor boaderColor, BaseColor internColor)
@@ -148,188 +80,56 @@ namespace PdfGenerator.Util
             this._contentByte.FillStroke();
         }
 
-
-        internal void HLine(float position)
+        internal void Rectangle(float xInit, float yInit, float width, float height, float widthLine, float radius, BaseColor boaderColor)
         {
+            this._contentByte.SetColorStroke(boaderColor);
+            this._contentByte.RoundRectangle(xInit, yInit, width, height, radius);
+            this._contentByte.SetLineWidth(widthLine);
+            this._contentByte.Stroke();
+        }
+
+        internal void HLine()
+        {
+            var position = NextPosition;
             this._contentByte.MoveTo(this._doc.LeftMargin, position);
             this._contentByte.LineTo(this._doc.PageSize.Width - this._doc.RightMargin, position);
             this._contentByte.Stroke();
         }
+        #endregion
 
-        internal void VLine(float x, float yInit, float yFinal)
+        #region Position
+        private float GetCurrentPosition() => _contentByte.YTLM;
+
+        private float GetNextPosition() => _contentByte.YTLM - 15;
+
+        internal void NextPage() => _doc.NewPage();
+        #endregion
+
+        #region Grid
+        internal void ShowGrid() => ShowGrid(true);
+
+        internal void ShowGridAndBoarderLimit()
         {
-            this._contentByte.SetColorFill(BaseColor.BLACK);
+            ShowGrid(true);
+            var xInit = this._doc.Left;
+            var yInit = this._doc.Bottom;
+            var width = this._doc.PageSize.Width - this._doc.RightMargin - this._doc.LeftMargin;
+            var heigth = this._doc.PageSize.Height - this._doc.TopMargin - this._doc.BottomMargin;
 
-            this._contentByte.MoveTo(x, yInit);
-            this._contentByte.LineTo(x, yFinal);
-            this._contentByte.Stroke();
+            Rectangle(xInit, yInit, width, heigth, 1, 1, BaseColor.RED);
         }
 
-        internal void VLine(float x, float yInit, float yFinal, BaseColor color)
+        internal void ShowBoarderLimit()
         {
-            this._contentByte.SetColorFill(color);
+            var xInit = this._doc.Left;
+            var yInit = this._doc.Bottom;
+            var width = this._doc.PageSize.Width - this._doc.RightMargin - this._doc.LeftMargin;
+            var heigth = this._doc.PageSize.Height - this._doc.TopMargin - this._doc.BottomMargin;
 
-            this._contentByte.MoveTo(x, yInit);
-            this._contentByte.LineTo(x, yFinal);
-            this._contentByte.Stroke();
+            Rectangle(xInit, yInit, width, heigth, 1, 1, BaseColor.BLACK);
         }
 
-        internal void TextCenter(string text, string nameFont, int sizeFont, float positionX, float positionY)
-        {
-            var bf = GetFont(nameFont);
-            this._contentByte.SetColorFill(BaseColor.BLACK);
-            this._contentByte.SetFontAndSize(bf, sizeFont);
-            this._contentByte.BeginText();
-            this._contentByte.ShowTextAligned(Element.ALIGN_CENTER, text, positionX, positionY, 0);
-            this._contentByte.EndText();
-        }
-
-        internal void TextRigth(string text, string nameFont, int sizeFont, float positionX, float positionY)
-        {
-            var bf = GetFont(nameFont);
-            this._contentByte.SetColorFill(BaseColor.BLACK);
-            this._contentByte.SetFontAndSize(bf, sizeFont);
-            this._contentByte.BeginText();
-            this._contentByte.ShowTextAligned(Element.ALIGN_LEFT, text, positionX, positionY, 0);
-            this._contentByte.EndText();
-        }
-
-        internal void TextLeft(string text, string nameFont, int sizeFont, float positionX, float positionY)
-        {
-            var bf = GetFont(nameFont);
-            this._contentByte.SetColorFill(BaseColor.BLACK);
-            this._contentByte.SetFontAndSize(bf, sizeFont);
-            this._contentByte.BeginText();
-            this._contentByte.ShowTextAligned(Element.ALIGN_RIGHT, text, positionX, positionY, 0);
-            this._contentByte.EndText();
-        }
-
-        internal Paragraph Text(string text, string nameFont, int sizeFont, int alignText)
-        {
-            var font = GetFont(nameFont);
-            var paragraph = new Paragraph(text, new Font(font, sizeFont, Font.NORMAL, BaseColor.BLACK));
-            paragraph.Alignment = alignText;
-
-            return paragraph;
-        }
-
-        internal Paragraph TextCenter(string text, string nameFont, int sizeFont)
-        {
-            var font = GetFont(nameFont);
-            var paragraph = new Paragraph(text, new Font(font, sizeFont, Font.NORMAL, BaseColor.BLACK));
-            paragraph.Alignment = Element.ALIGN_CENTER;
-
-            return paragraph;
-
-        }
-
-        internal Paragraph TextCenter(string text, int sizeFont)
-        {
-            var font = GetFont();
-            var paragraph = new Paragraph(text, new Font(font, sizeFont, Font.NORMAL, BaseColor.BLACK));
-            paragraph.Alignment = Element.ALIGN_CENTER;
-
-            return paragraph;
-
-        }
-
-        internal Paragraph TextCenter(string text)
-        {
-            var font = GetFont();
-            var paragraph = new Paragraph(text, new Font(font, this.SizeFont != 0 ? this.SizeFont : 12, Font.NORMAL, BaseColor.BLACK));
-            paragraph.Alignment = Element.ALIGN_CENTER;
-
-            return paragraph;
-
-        }
-
-        internal Paragraph TextJustified(string text, string nameFont, int sizeFont)
-        {
-            var font = GetFont(nameFont);
-            var paragraph = new Paragraph(text, new Font(font, sizeFont, Font.NORMAL, BaseColor.BLACK));
-            paragraph.Alignment = Element.ALIGN_JUSTIFIED;
-
-            return paragraph;
-        }
-
-        internal Paragraph TextJustified(string text, int sizeFont)
-        {
-            var font = GetFont();
-            var paragraph = new Paragraph(text, new Font(font, sizeFont, Font.NORMAL, BaseColor.BLACK));
-            paragraph.Alignment = Element.ALIGN_JUSTIFIED;
-
-            return paragraph;
-        }
-
-        internal Paragraph TextJustified(string text)
-        {
-            var font = GetFont();
-            var paragraph = new Paragraph(text, new Font(font, this.SizeFont != 0 ? this.SizeFont : 12, Font.NORMAL, BaseColor.BLACK));
-            paragraph.Alignment = Element.ALIGN_JUSTIFIED;
-
-            return paragraph;
-        }
-
-        internal Paragraph TextLeft(string text, string nameFont, int sizeFont)
-        {
-            var font = GetFont(nameFont);
-            var paragraph = new Paragraph(text, new Font(font, sizeFont, Font.NORMAL, BaseColor.BLACK));
-            paragraph.Alignment = Element.ALIGN_LEFT;
-
-            return paragraph;
-        }
-
-        internal Paragraph TextLeft(string text, int sizeFont)
-        {
-            var font = GetFont();
-            var paragraph = new Paragraph(text, new Font(font, sizeFont, Font.NORMAL, BaseColor.BLACK));
-            paragraph.Alignment = Element.ALIGN_LEFT;
-
-            return paragraph;
-        }
-
-        internal Paragraph TextLeft(string text)
-        {
-            var font = GetFont();
-            var paragraph = new Paragraph(text, new Font(font, this.SizeFont != 0 ? this.SizeFont : 12, Font.NORMAL, BaseColor.BLACK));
-            paragraph.Alignment = Element.ALIGN_LEFT;
-
-            return paragraph;
-        }
-
-
-        internal Paragraph TextRigth(string text, int sizeFont, string nameFont)
-        {
-            var font = GetFont(nameFont);
-            var paragraph = new Paragraph(text, new Font(font, sizeFont, Font.NORMAL, BaseColor.BLACK));
-            paragraph.Alignment = Element.ALIGN_RIGHT;
-
-            return paragraph;
-        }
-
-        internal Paragraph TextRigth(string text, int sizeFont)
-        {
-            var font = GetFont();
-            var paragraph = new Paragraph(text, new Font(font, sizeFont, Font.NORMAL, BaseColor.BLACK));
-            paragraph.Alignment = Element.ALIGN_RIGHT;
-
-            return paragraph;
-        }
-        internal Paragraph TextRigth(string text)
-        {
-            var font = GetFont();
-            var paragraph = new Paragraph(text, new Font(font, this.SizeFont != 0 ? this.SizeFont : 12, Font.NORMAL, BaseColor.BLACK));
-            paragraph.Alignment = Element.ALIGN_RIGHT;
-
-            return paragraph;
-        }
-
-        internal void AddGrid()
-        {
-            AddGrid(true);
-        }
-
-        internal void AddGrid(bool activate)
+        internal void ShowGrid(bool activate)
         {
             if (activate)
             {
@@ -380,5 +180,6 @@ namespace PdfGenerator.Util
             }
 
         }
+        #endregion
     }
 }

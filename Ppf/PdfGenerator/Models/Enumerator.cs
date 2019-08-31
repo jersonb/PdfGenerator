@@ -3,6 +3,7 @@
     public enum TypeContent
     {
         HEADER,
-        FOOTER
+        FOOTER,
+        CLIENT,
     }
 }

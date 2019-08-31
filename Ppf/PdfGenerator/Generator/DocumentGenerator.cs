@@ -1,8 +1,9 @@
 ﻿using iTextSharp.text;
-using iTextSharp.text.pdf;
-using PdfGenerator.Models;
-using PdfGenerator.Util;
+using PdfGenerator.Documents;
+using PdfGenerator.Models.Boddy.Components;
+using PdfGenerator.Models.HeaderAndFooter;
 using System.IO;
+
 
 namespace PdfGenerator.Generator
 {
@@ -14,33 +15,28 @@ namespace PdfGenerator.Generator
 
         public static MemoryStream Generate()
         {
-            using (var doc = new Document(PageSize.A4))
+            var ms = new MemoryStream();
+
+            using (var doc = new Document())
             {
-                doc.SetMargins(45, 45, 60, 45);
-                var ms = new MemoryStream();
+                var especificDocument = new EspecificDocument(ms, doc);
 
-                var pdf = PdfWriter.GetInstance(doc, ms);
-                pdf.CloseStream = false;
-                doc.Open();
+                var pathImageHeader = @"..\..\..\test\image_header.jpg";
+                var imageHeader = Image.GetInstance(File.Open(pathImageHeader, FileMode.Open));
+                var header = new HeaderElemment(imageHeader);
+                especificDocument.SetHeader(header);
 
-                var pathLogoHeader = @"..\..\..\test\image_header.jpg";
+                var client = new Client();
+                especificDocument.SetClient(client);
 
-                var helper = new PdfHelper(doc, pdf);
-                var headerFooterConfig = new HeaderFooterConfig(Image.GetInstance(File.Open(pathLogoHeader, FileMode.Open)));
+                var pathImageFooter = @"..\..\..\test\image_footer.jpg";
+                var imageFooter = Image.GetInstance(File.Open(pathImageFooter, FileMode.Open));
+                var footer = new FooterElemment(imageFooter);
+                especificDocument.SetFooter(footer);
 
-                helper.NewPage(headerFooterConfig, headerFooterConfig);
-                helper.NewPage(headerFooterConfig, headerFooterConfig);
-               
-                //util.AddGrid();
-
-
-                doc.Close();
-                var msInfo = ms.ToArray();
-                ms.Write(msInfo, 0, msInfo.Length);
-
-                ms.Position = 0;
-                return ms;
+                return especificDocument.GetPdf();
             }
+
         }
     }
 }

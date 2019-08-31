@@ -35,18 +35,21 @@
       <HintPath>..\packages\iTextSharp.5.5.13.1\lib\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Boddy\BoddyConfig.cs" />
+    <Compile Include="Models\Boddy\BodyElemment.cs" />
+    <Compile Include="Documents\GenericDocument.cs" />
     <Compile Include="Generator\DocumentGenerator.cs" />
+    <Compile Include="Documents\EspecificDocument.cs" />
+    <Compile Include="Interface\IGenericStructure.cs" />
+    <Compile Include="Models\Boddy\Componets\Client.cs" />
     <Compile Include="Models\Enumerator.cs" />
-    <Compile Include="Models\HeaderFooterConfig.cs" />
+    <Compile Include="Models\HeaderAndFooter\FooterElemment.cs" />
+    <Compile Include="Models\HeaderAndFooter\HeaderElemment.cs" />
+    <Compile Include="Models\HeaderAndFooter\HeaderFooterConfig.cs" />
+    <Compile Include="Models\Labels.cs" />
     <Compile Include="Util\PdfHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
