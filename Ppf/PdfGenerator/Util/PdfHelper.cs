@@ -27,6 +27,7 @@ namespace PdfGenerator.Util
 
         private readonly Document _doc;
         private readonly PdfContentByte _contentByte;
+        public int Lines { get;private set; } = 45;
         #endregion
 
         internal PdfHelper(Document doc, MemoryStream ms)
@@ -41,6 +42,8 @@ namespace PdfGenerator.Util
         #region Text
         internal void TextCenter(string text, string nameFont, int sizeFont, float positionX, float positionY)
         {
+            Lines--;
+            
             var font = GetFont(nameFont);
             this._contentByte.SetColorFill(BaseColor.BLACK);
             this._contentByte.SetFontAndSize(font, sizeFont);
@@ -51,13 +54,13 @@ namespace PdfGenerator.Util
 
         internal void TextLeft(string text, string nameFont, int sizeFont, float positionX, float positionY)
         {
+            Lines--;
             var bf = GetFont(nameFont);
             this._contentByte.SetColorFill(BaseColor.BLACK);
             this._contentByte.SetFontAndSize(bf, sizeFont);
             this._contentByte.BeginText();
             this._contentByte.ShowTextAligned(Element.ALIGN_LEFT, text, positionX, positionY, 0);
             this._contentByte.EndText();
-
         }
 
         private BaseFont GetFont(string font) => BaseFont.CreateFont(font, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
@@ -73,6 +76,8 @@ namespace PdfGenerator.Util
 
         internal void Rectangle(float xInit, float yInit, float width, float height, float widthLine, float radius, BaseColor boaderColor, BaseColor internColor)
         {
+            Lines--;
+            Lines--;
             this._contentByte.SetColorStroke(boaderColor);
             this._contentByte.SetColorFill(internColor);
             this._contentByte.RoundRectangle(xInit, yInit, width, height, radius);
@@ -82,6 +87,8 @@ namespace PdfGenerator.Util
 
         internal void Rectangle(float xInit, float yInit, float width, float height, float widthLine, float radius, BaseColor boaderColor)
         {
+            Lines--;
+            Lines--;
             this._contentByte.SetColorStroke(boaderColor);
             this._contentByte.RoundRectangle(xInit, yInit, width, height, radius);
             this._contentByte.SetLineWidth(widthLine);
@@ -90,6 +97,7 @@ namespace PdfGenerator.Util
 
         internal void HLine()
         {
+            Lines--;
             var position = NextPosition;
             this._contentByte.MoveTo(this._doc.LeftMargin, position);
             this._contentByte.LineTo(this._doc.PageSize.Width - this._doc.RightMargin, position);
@@ -98,15 +106,38 @@ namespace PdfGenerator.Util
         #endregion
 
         #region Position
+        internal void ResetLines() => Lines = 45;
+        internal void AdjustLines(int lines) => Lines += lines;
+
         private float GetCurrentPosition() => _contentByte.YTLM;
 
         private float GetNextPosition() => _contentByte.YTLM - 15;
 
-        internal void NextPage() => _doc.NewPage();
+        internal void NextPage()
+        {
+            _doc.NewPage();
+            ResetLines();
+        }
         #endregion
 
         #region Grid
         internal void ShowGrid() => ShowGrid(true);
+        internal void ShowLines()
+        {
+
+            for (int i = 0; i < 100; i++)
+            {
+                TextCenter(i.ToString(), BaseFont.COURIER, 8, _doc.PageSize.Width / 2, NextPosition);
+
+
+                if (Lines == 0)
+                {
+                    NextPage();
+                    ShowGrid();
+                }
+            }
+
+        }
 
         internal void ShowGridAndBoarderLimit()
         {
@@ -135,6 +166,7 @@ namespace PdfGenerator.Util
             {
                 var bf = GetFont(BaseFont.COURIER);
                 this._contentByte.SetColorFill(BaseColor.DARK_GRAY);
+                this._contentByte.SetColorStroke(BaseColor.BLACK);
                 this._contentByte.SetFontAndSize(bf, 8);
                 this._contentByte.SetLineDash(1f, 1f);
                 this._contentByte.BeginText();

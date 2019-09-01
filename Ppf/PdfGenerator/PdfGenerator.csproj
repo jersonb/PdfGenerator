@@ -45,6 +45,7 @@
     <Compile Include="Documents\EspecificDocument.cs" />
     <Compile Include="Interface\IGenericStructure.cs" />
     <Compile Include="Models\Boddy\Componets\Client.cs" />
+    <Compile Include="Models\Boddy\Componets\TitleComponent.cs" />
     <Compile Include="Models\Enumerator.cs" />
     <Compile Include="Models\HeaderAndFooter\FooterElemment.cs" />
     <Compile Include="Models\HeaderAndFooter\HeaderElemment.cs" />
