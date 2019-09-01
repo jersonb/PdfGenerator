@@ -38,14 +38,15 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Boddy\BoddyConfig.cs" />
-    <Compile Include="Models\Boddy\BodyElemment.cs" />
+    <Compile Include="Models\Body\BodyConfig.cs" />
+    <Compile Include="Models\Body\BodyElemment.cs" />
     <Compile Include="Documents\GenericDocument.cs" />
     <Compile Include="Generator\DocumentGenerator.cs" />
     <Compile Include="Documents\EspecificDocument.cs" />
     <Compile Include="Interface\IGenericStructure.cs" />
-    <Compile Include="Models\Boddy\Componets\Client.cs" />
-    <Compile Include="Models\Boddy\Componets\TitleComponent.cs" />
+    <Compile Include="Models\Body\Componets\Client.cs" />
+    <Compile Include="Models\Body\Componets\PrincipalTitle.cs" />
+    <Compile Include="Models\Body\Componets\TableValues.cs" />
     <Compile Include="Models\Enumerator.cs" />
     <Compile Include="Models\HeaderAndFooter\FooterElemment.cs" />
     <Compile Include="Models\HeaderAndFooter\HeaderElemment.cs" />

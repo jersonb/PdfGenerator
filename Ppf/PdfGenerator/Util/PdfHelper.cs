@@ -1,5 +1,7 @@
 ﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
+using PdfGenerator.Models.Label;
+using System.Collections.Generic;
 using System.IO;
 
 namespace PdfGenerator.Util
@@ -27,7 +29,7 @@ namespace PdfGenerator.Util
 
         private readonly Document _doc;
         private readonly PdfContentByte _contentByte;
-        public int Lines { get;private set; } = 45;
+        public int Lines { get; private set; } = 45;
         #endregion
 
         internal PdfHelper(Document doc, MemoryStream ms)
@@ -37,13 +39,91 @@ namespace PdfGenerator.Util
             pdf.CloseStream = false;
             this._doc.Open();
             this._contentByte = pdf.DirectContent;
+
         }
+
+        #region Table
+
+        internal void Table(List<string> titles, List<string> content)
+        {
+            //var titles = new List<string> { LabelValues.DIAS, LabelValues.VALOR, LabelValues.PORCENTO, LabelValues.DESCONTOS, LabelValues.VALOR_FINAL };
+            //var content = new List<string> { "DIAS1", "VALOR1", "%1", "DESCONTOS1", "VALOR FINAL1",
+            //                                   "DIAS2", "VALOR2", "%2", "DESCONTOS2", "VALOR FINAL2",
+            //                                   "DIAS3", "VALOR3", "%3", "DESCONTOS3", "VALOR FINAL3",
+            //                                   "DIAS4", "VALOR4", "%4", "DESCONTOS4", "VALOR FINAL4",
+            //                                   "DIAS5", "VALOR45", "%5", "DESCONTOS5", "VALOR FINAL5"};
+
+            var countColumn = titles.Count;
+
+            var table = new PdfPTable(countColumn)
+            {
+                TotalWidth = _doc.PageSize.Width - 50,
+                HorizontalAlignment = Element.ALIGN_CENTER
+
+            };
+            var tableheader = new PdfPCell(CellTableHeader(LabelValueTitle.VALOR_EVENTO))
+            {
+                Colspan = countColumn,
+                HorizontalAlignment = Element.ALIGN_CENTER,
+                Border = 0,
+
+            };
+
+            table.AddCell(tableheader);
+
+            titles.ForEach(x => table.AddCell(CellTableTitle(x)));
+
+            content.ForEach(x => table.AddCell(CellTableBody(x)));
+
+            table.WriteSelectedRows(0, -1, 15, NextPosition - 15, _contentByte);
+
+            Lines -= (table.Rows.Count + 3);
+
+            var factoCorrectionPosition = 20;
+            var factoCorrectionHeight = 10;
+
+            Rectangle(12, NextPosition - (factoCorrectionPosition + table.TotalHeight), table.TotalWidth, table.TotalHeight + factoCorrectionHeight, 1, 1, BaseColor.GRAY);
+        }
+
+        private PdfPCell CellTableHeader(string text)
+        {
+            return new PdfPCell(TetxtTable(text, BaseFont.HELVETICA_BOLD, 12))
+            {
+                HorizontalAlignment = Element.ALIGN_CENTER,
+                Border = 0,
+            };
+        }
+
+        private PdfPCell CellTableTitle(string text)
+        {
+            return new PdfPCell(TetxtTable(text, BaseFont.HELVETICA_BOLD, 8))
+            {
+                HorizontalAlignment = Element.ALIGN_CENTER,
+                Border = 0,
+            };
+        }
+
+        private PdfPCell CellTableBody(string text)
+        {
+            return new PdfPCell(TetxtTable(text, BaseFont.HELVETICA, 8))
+            {
+                HorizontalAlignment = Element.ALIGN_CENTER,
+                Border = 0,
+            };
+        }
+
+        private Phrase TetxtTable(string text, string nameFont, int sizeFont)
+        {
+            return new Phrase(text, new Font(BaseFont.CreateFont(nameFont, BaseFont.CP1252, BaseFont.NOT_EMBEDDED), sizeFont));
+        }
+        #endregion
+
 
         #region Text
         internal void TextCenter(string text, string nameFont, int sizeFont, float positionX, float positionY)
         {
             Lines--;
-            
+
             var font = GetFont(nameFont);
             this._contentByte.SetColorFill(BaseColor.BLACK);
             this._contentByte.SetFontAndSize(font, sizeFont);
@@ -99,6 +179,16 @@ namespace PdfGenerator.Util
         {
             Lines--;
             var position = NextPosition;
+            this._contentByte.SetColorStroke(BaseColor.BLACK);
+            this._contentByte.MoveTo(this._doc.LeftMargin, position);
+            this._contentByte.LineTo(this._doc.PageSize.Width - this._doc.RightMargin, position);
+            this._contentByte.Stroke();
+        }
+        internal void HDivision(float position)
+        {
+            Lines--;
+            position -= 5;
+            this._contentByte.SetColorStroke(BaseColor.GRAY);
             this._contentByte.MoveTo(this._doc.LeftMargin, position);
             this._contentByte.LineTo(this._doc.PageSize.Width - this._doc.RightMargin, position);
             this._contentByte.Stroke();
@@ -122,6 +212,7 @@ namespace PdfGenerator.Util
 
         #region Grid
         internal void ShowGrid() => ShowGrid(true);
+
         internal void ShowLines()
         {
 

@@ -1,7 +1,8 @@
 ﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
-using PdfGenerator.Models.Boddy;
-using PdfGenerator.Models.Boddy.Components;
+using PdfGenerator.Models.Body;
+using PdfGenerator.Models.Body.Components;
+using PdfGenerator.Models.Body.Componets;
 using PdfGenerator.Models.Label;
 using System.Collections.Generic;
 using System.IO;
@@ -12,12 +13,12 @@ namespace PdfGenerator.Documents
     {
         #region Properties
         private Client _client;
-        private readonly List<BoddyElemment> _boddy;
+        private readonly List<BodyElemment> _body;
         #endregion
 
         internal EspecificDocument(MemoryStream ms, Document doc) : base(ms, doc)
         {
-            _boddy = new List<BoddyElemment>();
+            _body = new List<BodyElemment>();
         }
 
         internal void SetDocumentTitle(string title)
@@ -30,33 +31,37 @@ namespace PdfGenerator.Documents
         {
             HeaderAndFooterStructure();
             ClientStructure();
-            PrintBoddy();
+            PrintBody();
 
 
-            pdfElemment.ShowLines();
+            //  pdfElemment.ShowLines();
 
-             pdfElemment.ShowGrid();
+            //      pdfElemment.ShowGrid();
 
             FinishPdf();
 
             return _ms;
         }
 
-        private void PrintBoddy()
+        private void PrintBody()
         {
-            if (_boddy.Count > 0)
+            if (_body.Count > 0)
             {
-                _boddy.ForEach(x => PrintBoddy(x));
+                _body.ForEach(x => PrintBody(x));
+
             }
         }
 
-        private void PrintBoddy(BoddyElemment boddy)
+        private void PrintBody(BodyElemment body)
         {
-            PrintBackgrounBoddy(boddy);
-            pdfElemment.TextCenter(boddy.TitleBoddy, BaseFont.HELVETICA_BOLD, 18, _doc.PageSize.Width / 2, pdfElemment.NextPosition - 35);
+            PrintBackgrounBody(body);
+         
+            pdfElemment.TextCenter(body.TitleBody, BaseFont.HELVETICA_BOLD, 18, _doc.PageSize.Width / 2, pdfElemment.NextPosition - 35);
 
+           
         }
-        private void PrintBackgrounBoddy(BoddyConfig config)
+
+        private void PrintBackgrounBody(BodyConfig config)
         {
             if (config.ShowBoarder)
             {
@@ -71,12 +76,13 @@ namespace PdfGenerator.Documents
                 var backgroundColor = config.BackColor ?? BaseColor.GRAY;
 
                 pdfElemment.Rectangle(lowerLeftX, lowerLeftY, widthRectangle, heigthRectangle, boarderWidth, radius, boarderColor, backgroundColor);
+                pdfElemment.HDivision(lowerLeftY);
             }
         }
 
-        internal void AddToBoddy(BoddyElemment boddy)
+        internal void AddToBody(BodyElemment body)
         {
-            _boddy.Add(boddy);
+            _body.Add(body);
         }
 
         internal void SetClient(Client client)

@@ -32,12 +32,37 @@ namespace PdfGenerator.Models.Label
         }
     }
 
-    internal abstract class LabelBoddyTitle
+    internal abstract class LabelBodyTitle
     {
         public const string RESUMO_GERAL = "RESUMO GERAL DO EVENTO";
+        public const string DETALHES_EVENTO = "DETALHES DO EVENTO";
 
-        private LabelBoddyTitle()
+        private LabelBodyTitle()
         {
+        }
+    }
+
+    internal abstract class LabelValueTitle
+    {
+        public const string VALOR_EVENTO = "VALOR DO EVENTO: R${0}";
+        public const string VALOR_FINAL = "VALOR FINAL: R${0}";
+
+        private LabelValueTitle()
+        {
+        }
+    }
+
+    internal abstract class LabelValues
+    {
+        public const string DIAS = "DIAS";
+        public const string VALOR = "VALOR";
+        public const string PORCENTO = "%";
+        public const string DESCONTOS = "DESCONTOS";
+        public const string VALOR_FINAL = "VALOR FINAL";
+
+        private LabelValues()
+        {
+                
         }
     }
 

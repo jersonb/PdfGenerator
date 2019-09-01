@@ -1,8 +1,8 @@
 ﻿using iTextSharp.text;
 
-namespace PdfGenerator.Models.Boddy
+namespace PdfGenerator.Models.Body
 {
-    internal abstract class BoddyConfig
+    internal abstract class BodyConfig
     {
         public BaseColor BoarderColor { get; set; }
         public BaseColor BackColor { get; set; }
