@@ -26,6 +26,7 @@ namespace PdfGenerator.Models.Label
     {
         public const string ORDEM_SERVICO = "ORDEM DE SERVICO";
         public const string DETALHAMENTO_SERVICO = "DETALHAMENTO DO SERVICO";
+        public const string DETALHAMENTO_PROPOSTA = "DETALHAMENTO DA PROPOSTA";
 
        private LabelDocumentTitle()
         {
@@ -51,10 +52,21 @@ namespace PdfGenerator.Models.Label
         {
         }
     }
+           
+    internal abstract class LabelNameTableValue
+    {
+        public const string VALOR_DIA = "VALOR POR DIA";
+        public const string VALOR_SERVICO = "VALOR POR SERVIÇO";
+
+        private LabelNameTableValue()
+        {
+        }
+    }
 
     internal abstract class LabelValues
     {
         public const string DIAS = "DIAS";
+        public const string ITEM = "ITEM";
         public const string VALOR = "VALOR";
         public const string PORCENTO = "%";
         public const string DESCONTOS = "DESCONTOS";

@@ -29,23 +29,35 @@ namespace PdfGenerator.Generator
                 var header = new HeaderElemment(imageHeader);
                 especificDocument.SetHeader(header);
 
-                especificDocument.SetDocumentTitle(LabelDocumentTitle.DETALHAMENTO_SERVICO);
+                especificDocument.SetDocumentTitle(LabelDocumentTitle.DETALHAMENTO_PROPOSTA);
 
                 var client =  Client.Create("Teste1","0000000000000","Teste2","0000000000000");
                 especificDocument.SetClient(client);
 
                 var titleBody = PrincipalTitle.Create(LabelBodyTitle.RESUMO_GERAL);
-                especificDocument.AddToBody(titleBody);
+                especificDocument.AddTitleBody(titleBody);
 
-                var titles = new List<string> { LabelValues.DIAS, LabelValues.VALOR, LabelValues.PORCENTO, LabelValues.DESCONTOS, LabelValues.VALOR_FINAL };
-                var content = new List<string> { "DIAS1", "VALOR1", "%1", "DESCONTOS1", "VALOR FINAL1",
+                var contentDay = new List<string> { "DIAS1", "VALOR1", "%1", "DESCONTOS1", "VALOR FINAL1",
                                                "DIAS2", "VALOR2", "%2", "DESCONTOS2", "VALOR FINAL2",
                                                "DIAS3", "VALOR3", "%3", "DESCONTOS3", "VALOR FINAL3",
                                                "DIAS4", "VALOR4", "%4", "DESCONTOS4", "VALOR FINAL4",
                                                "DIAS5", "VALOR45", "%5", "DESCONTOS5", "VALOR FINAL5"};
 
-                var table = TableValues.Create(LabelValueTitle.VALOR_EVENTO,titles,content);
-                especificDocument.AddToBody(table);
+
+                especificDocument.SetTableValueForDay(contentDay);
+
+
+                var contentService = new List<string> { "DIAS1", "VALOR1", "%1", "DESCONTOS1", "VALOR FINAL1",
+                                               "SERVIÇO2", "VALOR2", "%2", "DESCONTOS2", "VALOR FINAL2",
+                                               "SERVIÇO3", "VALOR3", "%3", "DESCONTOS3", "VALOR FINAL3",
+                                               "SERVIÇO4", "VALOR4", "%4", "DESCONTOS4", "VALOR FINAL4",
+                                               "SERVIÇO3", "VALOR3", "%3", "DESCONTOS3", "VALOR FINAL3",
+                                               "SERVIÇO4", "VALOR4", "%4", "DESCONTOS4", "VALOR FINAL4",
+                                               "SERVIÇO3", "VALOR3", "%3", "DESCONTOS3", "VALOR FINAL3",
+                                               "SERVIÇO4", "VALOR4", "%4", "DESCONTOS4", "VALOR FINAL4",
+                                               "SERVIÇO5", "VALOR45", "%5", "DESCONTOS5", "VALOR FINAL5"};
+
+                especificDocument.SetTableValueForService(contentService);
 
 
 
@@ -54,7 +66,7 @@ namespace PdfGenerator.Generator
                 var footer = new FooterElemment(imageFooter);
                 especificDocument.SetFooter(footer);
 
-                return especificDocument.GetPdf();
+                return especificDocument.StructureDocument();
             }
 
         }

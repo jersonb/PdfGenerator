@@ -1,6 +1,5 @@
 ﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
-using PdfGenerator.Models.Label;
 using System.Collections.Generic;
 using System.IO;
 
@@ -29,13 +28,14 @@ namespace PdfGenerator.Util
 
         private readonly Document _doc;
         private readonly PdfContentByte _contentByte;
+        private  PdfWriter pdf;
         public int Lines { get; private set; } = 45;
         #endregion
 
         internal PdfHelper(Document doc, MemoryStream ms)
         {
             this._doc = doc;
-            var pdf = PdfWriter.GetInstance(doc, ms);
+             pdf = PdfWriter.GetInstance(doc, ms);
             pdf.CloseStream = false;
             this._doc.Open();
             this._contentByte = pdf.DirectContent;
@@ -44,29 +44,24 @@ namespace PdfGenerator.Util
 
         #region Table
 
-        internal void Table(List<string> titles, List<string> content)
+        internal void Table(string nameTable,List<string> titles, List<string> content)
         {
-            //var titles = new List<string> { LabelValues.DIAS, LabelValues.VALOR, LabelValues.PORCENTO, LabelValues.DESCONTOS, LabelValues.VALOR_FINAL };
-            //var content = new List<string> { "DIAS1", "VALOR1", "%1", "DESCONTOS1", "VALOR FINAL1",
-            //                                   "DIAS2", "VALOR2", "%2", "DESCONTOS2", "VALOR FINAL2",
-            //                                   "DIAS3", "VALOR3", "%3", "DESCONTOS3", "VALOR FINAL3",
-            //                                   "DIAS4", "VALOR4", "%4", "DESCONTOS4", "VALOR FINAL4",
-            //                                   "DIAS5", "VALOR45", "%5", "DESCONTOS5", "VALOR FINAL5"};
-
+           
             var countColumn = titles.Count;
-
+          
             var table = new PdfPTable(countColumn)
             {
                 TotalWidth = _doc.PageSize.Width - 50,
-                HorizontalAlignment = Element.ALIGN_CENTER
+                HorizontalAlignment = Element.ALIGN_CENTER,
+                KeepTogether = true,
+                SplitLate = false,
 
             };
-            var tableheader = new PdfPCell(CellTableHeader(LabelValueTitle.VALOR_EVENTO))
+            var tableheader = new PdfPCell(CellTableHeader(nameTable))
             {
                 Colspan = countColumn,
                 HorizontalAlignment = Element.ALIGN_CENTER,
-                Border = 0,
-
+                Border = 0
             };
 
             table.AddCell(tableheader);
@@ -74,8 +69,11 @@ namespace PdfGenerator.Util
             titles.ForEach(x => table.AddCell(CellTableTitle(x)));
 
             content.ForEach(x => table.AddCell(CellTableBody(x)));
+            if ((NextPosition + table.TotalHeight)>41)
+            {
 
-            table.WriteSelectedRows(0, -1, 15, NextPosition - 15, _contentByte);
+            table.WriteSelectedRows(0, -1, 15,NextPosition - 15, _contentByte);
+            }
 
             Lines -= (table.Rows.Count + 3);
 
@@ -83,6 +81,11 @@ namespace PdfGenerator.Util
             var factoCorrectionHeight = 10;
 
             Rectangle(12, NextPosition - (factoCorrectionPosition + table.TotalHeight), table.TotalWidth, table.TotalHeight + factoCorrectionHeight, 1, 1, BaseColor.GRAY);
+
+            HLine();
+
+            TextCenter(".",BaseFont.HELVETICA,8,12, NextPosition - (factoCorrectionPosition + table.TotalHeight));
+           
         }
 
         private PdfPCell CellTableHeader(string text)
@@ -205,7 +208,9 @@ namespace PdfGenerator.Util
 
         internal void NextPage()
         {
+            _contentByte.NewPath();
             _doc.NewPage();
+
             ResetLines();
         }
         #endregion

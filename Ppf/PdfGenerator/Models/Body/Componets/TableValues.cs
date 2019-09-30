@@ -2,6 +2,7 @@
 
 namespace PdfGenerator.Models.Body.Componets
 {
+    // Esta classe não está sendo utilizada, apagar no final do projeto
     internal class TableValues : BodyElemment
     {
 

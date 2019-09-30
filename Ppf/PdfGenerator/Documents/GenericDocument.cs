@@ -38,10 +38,10 @@ namespace PdfGenerator.Documents
         }
 
         internal void NewPage()
-        {
+        {               
             pdfElemment.NextPage();
             HeaderAndFooterStructure();
-          
+                            
         }
 
         internal void FinishPdf()
@@ -59,22 +59,6 @@ namespace PdfGenerator.Documents
             this._header = header;
         }
 
-        //private void BoarderHeader()
-        //{
-        //    if (this._header.ShowBoarder)
-        //    {
-        //        var spacing = this._header.Spacing != 0 ? this._header.Spacing : 1f;
-        //        var boarderWidth = this._header.BoarderWidth != 0 ? this._header.BoarderWidth : 1;
-        //        var radius = this._header.BoardRadius != 0 ? this._header.BoardRadius : 0;
-        //        var lowerLeftX = this._header.LowerLeftX != 0 ? this._header.LowerLeftX : (_doc.RightMargin - spacing);
-        //        var lowerLeftY = this._header.LowerLeftY != 0 ? this._header.LowerLeftY : (_doc.PageSize.Height - _doc.TopMargin - spacing);
-        //        var widthRectangle = this._header.WidthRectangle != 0 ? this._header.WidthRectangle : (_doc.Right - _doc.RightMargin - spacing);
-        //        var heigthRectangle = this._header.HeigthRectangle != 0 ? this._header.HeigthRectangle : (_doc.TopMargin - spacing);
-        //        var boarderColor = this._header.BackColor ?? BaseColor.BLACK;
-
-        //        pdfElemment.Rectangle(lowerLeftX, lowerLeftY, widthRectangle, heigthRectangle, boarderWidth, radius, boarderColor);
-        //    }
-        //}
 
         private void LogoImageHeader()
         {
@@ -100,7 +84,7 @@ namespace PdfGenerator.Documents
         private void StructureHeader()
         {
             BasicDocumentData();
-            //BoarderHeader();
+         
             LogoImageHeader();
           
         }
@@ -114,7 +98,7 @@ namespace PdfGenerator.Documents
 
         private void StructureFooter()
         {
-            //BoarderFooter();
+           
             ImageFooter();
         }
 
@@ -126,23 +110,7 @@ namespace PdfGenerator.Documents
             }
         }
 
-        //private void BoarderFooter()
-        //{
-        //    if (this._footer.ShowBoarder)
-        //    {
-        //        var spacing = this._footer.Spacing != 0 ? this._footer.Spacing : 1f;
-        //        var boarderWidth = this._footer.BoarderWidth != 0 ? this._footer.BoarderWidth : 1;
-        //        var radius = this._footer.BoardRadius != 0 ? this._footer.BoardRadius : 0;
-        //        var lowerLeftX = this._footer.LowerLeftX != 0 ? this._footer.LowerLeftX : (_doc.RightMargin - spacing);
-        //        var lowerLeftY = spacing;
-        //        var widthRectangle = this._footer.WidthRectangle != 0 ? this._footer.WidthRectangle : (_doc.Right - _doc.RightMargin - spacing);
-        //        var heigthRectangle = this._footer.HeigthRectangle != 0 ? this._footer.HeigthRectangle : (_doc.BottomMargin - spacing);
-        //        var boarderColor = this._footer.BackColor ?? BaseColor.BLACK;
-
-        //        pdfElemment.Rectangle(lowerLeftX, lowerLeftY, widthRectangle, heigthRectangle, boarderWidth, radius, boarderColor);
-
-        //    }
-        //}
+      
         #endregion
 
     }
