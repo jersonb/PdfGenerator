@@ -28,14 +28,14 @@ namespace PdfGenerator.Util
 
         private readonly Document _doc;
         private readonly PdfContentByte _contentByte;
-        private  PdfWriter pdf;
+        private PdfWriter pdf;
         public int Lines { get; private set; } = 45;
         #endregion
 
         internal PdfHelper(Document doc, MemoryStream ms)
         {
             this._doc = doc;
-             pdf = PdfWriter.GetInstance(doc, ms);
+            pdf = PdfWriter.GetInstance(doc, ms);
             pdf.CloseStream = false;
             this._doc.Open();
             this._contentByte = pdf.DirectContent;
@@ -44,11 +44,10 @@ namespace PdfGenerator.Util
 
         #region Table
 
-        internal void Table(string nameTable,List<string> titles, List<string> content)
+        internal void Table(string nameTable, List<string> titles, List<string> content)
         {
-           
             var countColumn = titles.Count;
-          
+
             var table = new PdfPTable(countColumn)
             {
                 TotalWidth = _doc.PageSize.Width - 50,
@@ -69,10 +68,10 @@ namespace PdfGenerator.Util
             titles.ForEach(x => table.AddCell(CellTableTitle(x)));
 
             content.ForEach(x => table.AddCell(CellTableBody(x)));
-            if ((NextPosition + table.TotalHeight)>41)
+            if ((NextPosition + table.TotalHeight) > 41)
             {
 
-            table.WriteSelectedRows(0, -1, 15,NextPosition - 15, _contentByte);
+                table.WriteSelectedRows(0, -1, 15, NextPosition - 15, _contentByte);
             }
 
             Lines -= (table.Rows.Count + 3);
@@ -80,12 +79,13 @@ namespace PdfGenerator.Util
             var factoCorrectionPosition = 20;
             var factoCorrectionHeight = 10;
 
-            Rectangle(12, NextPosition - (factoCorrectionPosition + table.TotalHeight), table.TotalWidth, table.TotalHeight + factoCorrectionHeight, 1, 1, BaseColor.GRAY);
+            Rectangle(25, NextPosition - (factoCorrectionPosition + table.TotalHeight), table.TotalWidth, table.TotalHeight + factoCorrectionHeight, 0.1f, 1, BaseColor.GRAY);
 
+
+            TextCenter(" ", BaseFont.HELVETICA, 8, 25, NextPosition - (factoCorrectionPosition + table.TotalHeight));
+
+            HDivision(12);
             HLine();
-
-            TextCenter(".",BaseFont.HELVETICA,8,12, NextPosition - (factoCorrectionPosition + table.TotalHeight));
-           
         }
 
         private PdfPCell CellTableHeader(string text)
@@ -123,6 +123,73 @@ namespace PdfGenerator.Util
 
 
         #region Text
+
+        internal void TextRightBorder(string[] iten)
+        {
+            var total = iten[0];
+            var forRoom = iten[1];
+            var daily = iten[2];
+            var roons = iten[3];
+            var font = BaseFont.HELVETICA_BOLD;
+            
+            var columnText = new ColumnText(_contentByte)
+            {
+                Alignment = Element.ALIGN_RIGHT,
+                AdjustFirstLine = false,
+                SpaceCharRatio = 1,
+                Leading = 9,
+                ExtraParagraphSpace = 0
+            };
+
+            var llx = _doc.PageSize.Width * 0.75f;
+            var lly = NextPosition-60;
+            var urx = _doc.PageSize.Width -(_doc.Left*2);
+            var ury = NextPosition;
+
+            columnText.SetIndent(0, true);
+          
+            columnText.AddText(new Phrase(total + "\n", new Font(GetFont(font), 10)));
+            columnText.AddText(new Phrase(forRoom + "\n", new Font(GetFont(font), 8)));
+            columnText.AddText(new Phrase(daily + "\n", new Font(GetFont(font), 8)));
+            columnText.AddText(new Phrase(roons + "\n", new Font(GetFont(font), 8)));
+
+            var adjustX = 20f;
+            var adjustY = 10f;
+
+            columnText.SetSimpleColumn(llx-adjustX, lly-adjustY, urx-adjustX, ury-adjustY);
+            columnText.Go();
+            Rectangle(llx,lly,urx-llx,ury-lly,0.3f,0,BaseColor.GRAY);
+            TextCenter("", BaseFont.HELVETICA, 8, 25, lly);
+
+        }
+
+        internal void TextLeftColumn(string text)
+        {
+            var phrase = new Phrase(text, new Font(GetFont(BaseFont.HELVETICA), 7));
+            var columnText = new ColumnText(_contentByte)
+            {
+                Alignment = Element.ALIGN_LEFT,
+                AdjustFirstLine = false,
+                SpaceCharRatio = 1,
+                Leading = 8,
+                ExtraParagraphSpace = 0,
+            };
+
+            var llx = 25;
+            var lly = (CurrentPosition - (text.Length / 5.5f))<200f ? 200f:(CurrentPosition - (text.Length / 5.5f));
+            var urx = _doc.PageSize.Width * 0.60f;
+            var ury = NextPosition;
+
+            columnText.SetIndent(0, true);
+            columnText.SetText(phrase);
+
+            columnText.SetSimpleColumn(llx, lly, urx, ury);
+
+            columnText.Go();
+           
+            Lines -= columnText.LinesWritten;
+        }
+
         internal void TextCenter(string text, string nameFont, int sizeFont, float positionX, float positionY)
         {
             Lines--;
@@ -132,6 +199,17 @@ namespace PdfGenerator.Util
             this._contentByte.SetFontAndSize(font, sizeFont);
             this._contentByte.BeginText();
             this._contentByte.ShowTextAligned(Element.ALIGN_CENTER, text, positionX, positionY, 0);
+            this._contentByte.EndText();
+        }
+        internal void TextRigth(string text, string nameFont, int sizeFont, float positionX, float positionY)
+        {
+            Lines--;
+
+            var font = GetFont(nameFont);
+            this._contentByte.SetColorFill(BaseColor.BLACK);
+            this._contentByte.SetFontAndSize(font, sizeFont);
+            this._contentByte.BeginText();
+            this._contentByte.ShowTextAligned(Element.ALIGN_RIGHT, text, positionX, positionY, 0);
             this._contentByte.EndText();
         }
 
@@ -182,7 +260,8 @@ namespace PdfGenerator.Util
         {
             Lines--;
             var position = NextPosition;
-            this._contentByte.SetColorStroke(BaseColor.BLACK);
+            this._contentByte.SetLineWidth(1f);
+            this._contentByte.SetColorStroke(BaseColor.GRAY);
             this._contentByte.MoveTo(this._doc.LeftMargin, position);
             this._contentByte.LineTo(this._doc.PageSize.Width - this._doc.RightMargin, position);
             this._contentByte.Stroke();
@@ -191,6 +270,7 @@ namespace PdfGenerator.Util
         {
             Lines--;
             position -= 5;
+            this._contentByte.SetLineWidth(1f);
             this._contentByte.SetColorStroke(BaseColor.GRAY);
             this._contentByte.MoveTo(this._doc.LeftMargin, position);
             this._contentByte.LineTo(this._doc.PageSize.Width - this._doc.RightMargin, position);
@@ -201,6 +281,10 @@ namespace PdfGenerator.Util
         #region Position
         internal void ResetLines() => Lines = 45;
         internal void AdjustLines(int lines) => Lines += lines;
+
+        internal void NextLine() => TextCenter(" ", BaseFont.HELVETICA, 8, 25, NextPosition);
+
+        internal float CenterX() => _doc.PageSize.Width / 2;
 
         private float GetCurrentPosition() => _contentByte.YTLM;
 
@@ -223,7 +307,7 @@ namespace PdfGenerator.Util
 
             for (int i = 0; i < 100; i++)
             {
-                TextCenter(i.ToString(), BaseFont.COURIER, 8, _doc.PageSize.Width / 2, NextPosition);
+                TextCenter(i.ToString(), BaseFont.COURIER, 8, CenterX(), NextPosition);
 
 
                 if (Lines == 0)
@@ -248,6 +332,7 @@ namespace PdfGenerator.Util
 
         internal void ShowBoarderLimit()
         {
+            this._contentByte.SetLineWidth(1f);
             var xInit = this._doc.Left;
             var yInit = this._doc.Bottom;
             var width = this._doc.PageSize.Width - this._doc.RightMargin - this._doc.LeftMargin;
@@ -261,6 +346,7 @@ namespace PdfGenerator.Util
             if (activate)
             {
                 var bf = GetFont(BaseFont.COURIER);
+                this._contentByte.SetLineWidth(1f);
                 this._contentByte.SetColorFill(BaseColor.DARK_GRAY);
                 this._contentByte.SetColorStroke(BaseColor.BLACK);
                 this._contentByte.SetFontAndSize(bf, 8);

@@ -1,6 +1,5 @@
 ﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
-using PdfGenerator.Interface;
 using PdfGenerator.Models.HeaderAndFooter;
 using PdfGenerator.Models.Label;
 using PdfGenerator.Util;
@@ -9,15 +8,15 @@ using System.IO;
 
 namespace PdfGenerator.Documents
 {
-    internal class GenericDocument : IGenericStructure
+    public class GenericDocument 
     {
         #region Propreties
         protected readonly MemoryStream _ms;
         protected readonly Document _doc;
         protected readonly PdfHelper pdfElemment;
        
-        private HeaderElemment _header;
-        private FooterElemment _footer;
+        private HeaderFooterElemment _header;
+        private HeaderFooterElemment _footer;
         #endregion
 
         public GenericDocument(MemoryStream ms, Document doc)
@@ -29,7 +28,7 @@ namespace PdfGenerator.Documents
             pdfElemment = new PdfHelper(_doc, _ms);
         }
 
-        internal void HeaderAndFooterStructure()
+        public void HeaderAndFooterStructure()
         {
             pdfElemment.InitialPosition = 770;
 
@@ -37,14 +36,14 @@ namespace PdfGenerator.Documents
             StructureFooter();
         }
 
-        internal void NewPage()
+        public void NewPage()
         {               
             pdfElemment.NextPage();
             HeaderAndFooterStructure();
                             
         }
 
-        internal void FinishPdf()
+        public void FinishPdf()
         {
             _doc.Close();
             var msInfo = _ms.ToArray();
@@ -54,7 +53,7 @@ namespace PdfGenerator.Documents
         }
 
         #region Header
-        public void SetHeader(HeaderElemment header)
+        public void SetHeader(HeaderFooterElemment header)
         {
             this._header = header;
         }
@@ -72,7 +71,7 @@ namespace PdfGenerator.Documents
         private void BasicDocumentData()
         {
             var requestDate = this._header.RequestDate ?? DateTime.Now.ToString("dd/MM/yyyy");
-            var requestId = this._header.RequestId ?? Guid.NewGuid().ToString().Replace("-", "").Substring(0, 6).ToUpper();
+            var requestId = this._header.RequestId ?? "000000";
             var nameEvent = this._header.NameEvent;
 
             pdfElemment.TextLeft(string.Format("{0} : {1}", LabelHeader.DATA_DA_SOLICITACAO, requestDate), BaseFont.HELVETICA_BOLD, 8, 14, pdfElemment.InitialPosition);
@@ -91,7 +90,7 @@ namespace PdfGenerator.Documents
         #endregion
 
         #region Footer
-        public void SetFooter(FooterElemment footer)
+        public void SetFooter(HeaderFooterElemment footer)
         {
             this._footer = footer;
         }

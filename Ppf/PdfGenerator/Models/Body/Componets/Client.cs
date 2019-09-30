@@ -1,7 +1,7 @@
 ﻿
 namespace PdfGenerator.Models.Body.Components
 {
-    internal class Client : BodyElemment
+    public class Client : BodyElemment
     {
         private Client(string requester, string cnpjRequester, string affiliate, string cnpjAffiliate)
         {
@@ -9,11 +9,6 @@ namespace PdfGenerator.Models.Body.Components
             CnpjRequester = cnpjRequester;
             Affiliate = affiliate;
             CnpjAffiliate = cnpjAffiliate;
-        }
-
-        private Client()
-        {
-           
         }
 
         public static Client Create(string requester, string cnpjRequester, string affiliate, string cnpjAffiliate)

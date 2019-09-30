@@ -26,7 +26,9 @@ namespace PdfGenerator.Generator
 
                 var pathImageHeader = @"..\..\..\test\image_header.jpg";
                 var imageHeader = Image.GetInstance(File.Open(pathImageHeader, FileMode.Open));
-                var header = new HeaderElemment(imageHeader);
+                var header =  HeaderFooterElemment.Create(imageHeader);
+                header.Configure("20/11/19","555555","Teste de Geração do PDF");
+
                 especificDocument.SetHeader(header);
 
                 especificDocument.SetDocumentTitle(LabelDocumentTitle.DETALHAMENTO_PROPOSTA);
@@ -34,7 +36,7 @@ namespace PdfGenerator.Generator
                 var client =  Client.Create("Teste1","0000000000000","Teste2","0000000000000");
                 especificDocument.SetClient(client);
 
-                var titleBody = PrincipalTitle.Create(LabelBodyTitle.RESUMO_GERAL);
+                var titleBody = Title.CreateTitleBody(LabelBodyTitle.RESUMO_GERAL);
                 especificDocument.AddTitleBody(titleBody);
 
                 var contentDay = new List<string> { "DIAS1", "VALOR1", "%1", "DESCONTOS1", "VALOR FINAL1",
@@ -47,7 +49,7 @@ namespace PdfGenerator.Generator
                 especificDocument.SetTableValueForDay(contentDay);
 
 
-                var contentService = new List<string> { "DIAS1", "VALOR1", "%1", "DESCONTOS1", "VALOR FINAL1",
+                var contentService = new List<string> { "SERVIÇO1", "VALOR1", "%1", "DESCONTOS1", "VALOR FINAL1",
                                                "SERVIÇO2", "VALOR2", "%2", "DESCONTOS2", "VALOR FINAL2",
                                                "SERVIÇO3", "VALOR3", "%3", "DESCONTOS3", "VALOR FINAL3",
                                                "SERVIÇO4", "VALOR4", "%4", "DESCONTOS4", "VALOR FINAL4",
@@ -63,7 +65,7 @@ namespace PdfGenerator.Generator
 
                 var pathImageFooter = @"..\..\..\test\image_footer.jpg";
                 var imageFooter = Image.GetInstance(File.Open(pathImageFooter, FileMode.Open));
-                var footer = new FooterElemment(imageFooter);
+                var footer =  HeaderFooterElemment.Create(imageFooter);
                 especificDocument.SetFooter(footer);
 
                 return especificDocument.StructureDocument();

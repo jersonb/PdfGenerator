@@ -2,33 +2,35 @@
 using iTextSharp.text.pdf;
 using PdfGenerator.Models.Body;
 using PdfGenerator.Models.Body.Components;
+using PdfGenerator.Models.Body.Componets;
 using PdfGenerator.Models.Label;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace PdfGenerator.Documents
 {
-    internal class EspecificDocument : GenericDocument
+    public class EspecificDocument : GenericDocument
     {
         #region Properties
         private string NameDocument;
         private Client _client;
-        private readonly List<BodyElemment> _bodyTitles;
+        private readonly List<Title> _bodyTitles;
         private List<string> ContentForServices { get; set; }
         private List<string> ContentForDays { get; set; }
 
         #endregion
 
-        internal EspecificDocument(MemoryStream ms, Document doc) : base(ms, doc)
+        public EspecificDocument(MemoryStream ms, Document doc) : base(ms, doc)
         {
-            _bodyTitles = new List<BodyElemment>();
+            _bodyTitles = new List<Title>();
             ContentForServices = new List<string>();
             ContentForDays = new List<string>();
         }
         /// <summary>
         /// Este método monta a estrutura do PDF na ordem
         /// </summary>
-        internal MemoryStream StructureDocument()
+        public MemoryStream StructureDocument()
         {
             DocumentTitleStructure();
             HeaderAndFooterStructure();
@@ -39,17 +41,41 @@ namespace PdfGenerator.Documents
             PrintTableValueForDay();
             PrintTableValueForService();
 
+            PrintService();
+
             FinishPdf();
 
             return _ms;
         }
+
+        private void PrintService()
+        {
+            PageBreak();
+            var acommodation = Services.CreateAccommodation();
+            acommodation.Name = "SUPERIOR";
+            acommodation.Description = string.Concat("1 CAMA DE CASAL KING SIZE OU 2 CAMAS DE SOLTEIRO (SOLTEIRÃO), TELEFONE NA CABECEIRA DA CAMA,",
+                                          " RÁDIO RELÓGIO, SMART TV 49’, MESA DE TRABALHO COM TELEFONE, INTERNET WI-FI, MESA DE REFEIÇÃO,",
+                                       " AR CONDICIONADO, FECHADURA ELETRÔNICA, COFRE ELETRÔNICO, FERRO E TÁBUA DE PASSAR, 1",
+                                       " GARRAFA DE ÁGUA MINERAL CORTESIA E MINIBAR.BANHEIRO EQUIPADO COM: TELEFONE, SECADOR DE",
+                                       " CABELOS, ESPELHO RETRÁTIL DE AUMENTO, VARAL RETRÁTIL E AMENITIES.");
+            pdfElemment.NextLine();
+            pdfElemment.TextLeft(acommodation.TitleBody, BaseFont.HELVETICA, 10, 12, pdfElemment.NextPosition);
+            pdfElemment.TextLeft(acommodation.Name, BaseFont.HELVETICA, 8, 12, pdfElemment.NextPosition);
+
+            pdfElemment.TextLeftColumn(acommodation.Description);
+            var itens = new string[] { "R$46.299,00", "R$701,50 POR QUARTO", "2 DIÁRIAS", "33 QUARTOS" };
+            pdfElemment.TextRightBorder(itens);
+
+            pdfElemment.TextLeft(acommodation.Name, BaseFont.HELVETICA, 8, 12, pdfElemment.NextPosition);
+        }
+
         /// <summary>
         /// ATENÇÃO: Este método deve ser reavaliado para refatoração.
         /// Insere o conteúdo do resumo dos valores por dia. 
         /// Nenhum valor deve vir nulo.
         /// </summary>
         /// <param name="content"></param>
-        internal void SetTableValueForDay(List<string> content)
+        public void SetTableValueForDay(List<string> content)
         {
             this.ContentForDays.AddRange(content);
         }
@@ -60,7 +86,7 @@ namespace PdfGenerator.Documents
         /// Nenhum valor deve vir nulo.
         /// </summary>
         /// <param name="content"></param>
-        internal void SetTableValueForService(List<string> content)
+        public void SetTableValueForService(List<string> content)
         {
             this.ContentForServices.AddRange(content);
         }
@@ -86,7 +112,7 @@ namespace PdfGenerator.Documents
         /// Adiciona Titulos 
         /// </summary>
         /// <param name="body"></param>
-        internal void AddTitleBody(BodyElemment body)
+        public void AddTitleBody(Title body)
         {
             _bodyTitles.Add(body);
         }
@@ -96,7 +122,7 @@ namespace PdfGenerator.Documents
         /// Deve ser utilizada a classe LabelDocumentTitle
         /// </summary>
         /// <param name="title"></param>
-        internal void SetDocumentTitle(string title)
+        public void SetDocumentTitle(string title)
         {
             this.NameDocument = title;
         }
@@ -108,15 +134,15 @@ namespace PdfGenerator.Documents
         private void DocumentTitleStructure()
         {
             PageBreak();
-            pdfElemment.TextCenter(NameDocument, BaseFont.HELVETICA_BOLD, 20, _doc.PageSize.Width / 2, 810);
-            pdfElemment.AdjustLines(1);
+            pdfElemment.TextCenter(NameDocument, BaseFont.HELVETICA_BOLD, 20, pdfElemment.CenterX(), 810);
+            pdfElemment.AdjustLines(2);
         }
 
         /// <summary>
         /// Seleciona o cliente para o Documento
         /// </summary>
         /// <param name="client"></param>
-        internal void SetClient(Client client)
+        public void SetClient(Client client)
         {
             this._client = client;
         }
@@ -153,13 +179,12 @@ namespace PdfGenerator.Documents
         /// Os títulos devem ser utilizados quando forem frases centralizadas. 
         /// Com fonte de tamanho grande 
         /// </summary>
-        /// <param name="body"></param>
-        private void PrintTitleBody(BodyElemment body)
+        /// <param name="titleBody"></param>
+        private void PrintTitleBody(Title titleBody)
         {
             PageBreak();
-            PrintBackgrounBody(body);
-
-            pdfElemment.TextCenter(body.TitleBody, BaseFont.HELVETICA_BOLD, 18, _doc.PageSize.Width / 2, pdfElemment.NextPosition - 35);
+            PrintBackgrounBody(titleBody);
+            pdfElemment.TextCenter(titleBody.TitleBody, BaseFont.HELVETICA_BOLD, 18, pdfElemment.CenterX(), pdfElemment.NextPosition - 35);
 
         }
 
@@ -170,7 +195,7 @@ namespace PdfGenerator.Documents
         /// caso estes valores venham nulos.
         /// </summary>
         /// <param name="config"> </param>
-        private void PrintBackgrounBody(BodyConfig config)
+        private void PrintBackgrounBody(BodyElemment config)
         {
             if (config.ShowBoarder)
             {
