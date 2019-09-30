@@ -5,11 +5,14 @@ namespace PdfGenerator.Models.Body
     public abstract class BodyElemment 
     {
         public string TitleBody { get; set; }
+        public float MinSizeHeight { get; set; }
 
         public BaseColor BoarderColor { get; set; }
         public BaseColor BackColor { get; set; }
+        public float BackOpacity { get; set; }
 
         public bool ShowBoarder { get; set; } = true;
+        public bool ShowLine { get; set; } = true;
 
         public float Spacing { get; set; }
         public int BoarderWidth { get; set; }

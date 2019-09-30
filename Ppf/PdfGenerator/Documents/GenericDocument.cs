@@ -30,8 +30,6 @@ namespace PdfGenerator.Documents
 
         public void HeaderAndFooterStructure()
         {
-            pdfElemment.InitialPosition = 770;
-
             StructureHeader();
             StructureFooter();
         }
@@ -40,7 +38,6 @@ namespace PdfGenerator.Documents
         {               
             pdfElemment.NextPage();
             HeaderAndFooterStructure();
-                            
         }
 
         public void FinishPdf()
@@ -74,10 +71,10 @@ namespace PdfGenerator.Documents
             var requestId = this._header.RequestId ?? "000000";
             var nameEvent = this._header.NameEvent;
 
-            pdfElemment.TextLeft(string.Format("{0} : {1}", LabelHeader.DATA_DA_SOLICITACAO, requestDate), BaseFont.HELVETICA_BOLD, 8, 14, pdfElemment.InitialPosition);
+            pdfElemment.TextLeft(string.Format("{0} : {1}", LabelHeader.DATA_DA_SOLICITACAO, requestDate), BaseFont.HELVETICA_BOLD, 8, 14, pdfElemment.NextPosition);
             pdfElemment.TextLeft(string.Format("{0} : {1}", LabelHeader.ID_DA_SOLICITACAO, requestId), BaseFont.HELVETICA_BOLD, 8, 14, pdfElemment.NextPosition);
             pdfElemment.TextLeft(string.Format("{0} : {1}", LabelHeader.NOME_DO_EVENTO, nameEvent), BaseFont.HELVETICA_BOLD, 8, 14, pdfElemment.NextPosition);
-            pdfElemment.HLine();
+
         }
 
         private void StructureHeader()

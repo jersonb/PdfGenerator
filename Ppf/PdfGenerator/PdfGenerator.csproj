@@ -44,7 +44,16 @@
     <Compile Include="Generator\DocumentGenerator.cs" />
     <Compile Include="Documents\EspecificDocument.cs" />
     <Compile Include="Models\Body\Componets\Client.cs" />
-    <Compile Include="Models\Body\Componets\Services.cs" />
+    <Compile Include="Models\Body\Componets\GenericItem.cs" />
+    <Compile Include="Models\Body\Events\Food\Meal.cs" />
+    <Compile Include="Models\Body\Events\DaysEvent.cs" />
+    <Compile Include="Models\Body\Events\EventDetail.cs" />
+    <Compile Include="Models\Body\Events\Food\Food.cs" />
+    <Compile Include="Models\Body\Events\Room.cs" />
+    <Compile Include="Models\Body\Events\Schedule.cs" />
+    <Compile Include="Models\Body\Services\Accommodation.cs" />
+    <Compile Include="Models\Body\Services\Lodging.cs" />
+    <Compile Include="Models\Body\Services\Services.cs" />
     <Compile Include="Models\Body\Componets\Title.cs" />
     <Compile Include="Models\Body\Componets\TableValues.cs" />
     <Compile Include="Models\Enumerator.cs" />
