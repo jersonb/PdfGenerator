@@ -59,7 +59,7 @@ namespace PdfGenerator.Test
                 }
 
                 using (var fs = new FileStream(pathFile, FileMode.Create))
-                using (var ms = PdfGenerator.Generator.Certificados.Generate(name,pathPhoto))
+                using (var ms = PdfGenerator.Generator.Certificate.Generate(name,pathPhoto))
                 {
                     ms.CopyTo(fs);
                     fs.CopyTo(ms);

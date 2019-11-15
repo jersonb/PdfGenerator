@@ -38,7 +38,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Generator\Certificados.cs" />
+    <Compile Include="Generator\Certificate.cs" />
     <Compile Include="Models\Body\BodyElemment.cs" />
     <Compile Include="Documents\GenericDocument.cs" />
     <Compile Include="Generator\DocumentGenerator.cs" />
