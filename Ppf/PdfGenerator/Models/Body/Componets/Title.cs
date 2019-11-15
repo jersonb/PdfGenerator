@@ -26,20 +26,20 @@ namespace PdfGenerator.Models.Body.Componets
            };
 
         public static Title CreateTitleBodyDetail(string title)
-=> new Title()
-{
-    TitleBody = title,
-    BackColor = BaseColor.ORANGE,
-    BoarderColor = BaseColor.WHITE,
-    ColorFont = BaseColor.GRAY,
-    Spacing = 2,
-    HeigthRectangle = 40,
-    BoardRadius = 1f,
-    MinSizeHeight = 50f,
-    SizeFont = 18,
-    BackOpacity = 0.4f,
-    ShowLine = false
-};
+            => new Title()
+            {
+                TitleBody = title,
+                BackColor = BaseColor.ORANGE,
+                BoarderColor = BaseColor.WHITE,
+                ColorFont = BaseColor.GRAY,
+                Spacing = 2,
+                HeigthRectangle = 40,
+                BoardRadius = 1f,
+                MinSizeHeight = 50f,
+                SizeFont = 18,
+                BackOpacity = 0.4f,
+                ShowLine = false
+            };
 
 
         public static Title CreateTitleValueEvent(string title)

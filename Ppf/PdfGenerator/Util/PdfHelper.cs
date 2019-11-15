@@ -368,7 +368,6 @@ namespace PdfGenerator.Util
         internal void AddImage(Image image, float absoluteX, float absoluteY)
             => AddImage(image, absoluteX, absoluteY, image.Width, image.Height);
 
-
        
         internal void Rectangle(float xInit, float yInit, float width, float height, float widthLine, float radius, BaseColor boaderColor, BaseColor internColor, float opacity)
         {

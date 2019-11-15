@@ -1,25 +1,22 @@
 ﻿using iTextSharp.text;
-using iTextSharp.text.pdf;
 using PdfGenerator.Models.HeaderAndFooter;
-using PdfGenerator.Models.Label;
 using PdfGenerator.Util;
-using System;
 using System.IO;
 
 namespace PdfGenerator.Documents
 {
-    public class GenericDocument 
+    public class GenericDocument
     {
         #region Propreties
         protected readonly MemoryStream _ms;
         protected readonly Document _doc;
         protected readonly PdfHelper pdfElemment;
-       
+
         private HeaderFooterElemment _header;
         private HeaderFooterElemment _footer;
         #endregion
 
-        public GenericDocument(MemoryStream ms, Document doc)
+        protected GenericDocument(MemoryStream ms, Document doc)
         {
             _ms = ms;
             _doc = doc;
@@ -35,7 +32,7 @@ namespace PdfGenerator.Documents
         }
 
         public void NewPage()
-        {               
+        {
             pdfElemment.NextPage();
             HeaderAndFooterStructure();
         }
@@ -64,25 +61,10 @@ namespace PdfGenerator.Documents
             }
         }
 
-
-        private void BasicDocumentData()
-        {
-            var requestDate = this._header.RequestDate ?? DateTime.Now.ToString("dd/MM/yyyy");
-            var requestId = this._header.RequestId ?? "000000";
-            var nameEvent = this._header.NameEvent;
-
-            pdfElemment.TextLeft(string.Format("{0} : {1}", LabelHeader.DATA_DA_SOLICITACAO, requestDate), BaseFont.HELVETICA_BOLD, 8, 14, pdfElemment.NextPosition);
-            pdfElemment.TextLeft(string.Format("{0} : {1}", LabelHeader.ID_DA_SOLICITACAO, requestId), BaseFont.HELVETICA_BOLD, 8, 14, pdfElemment.NextPosition);
-            pdfElemment.TextLeft(string.Format("{0} : {1}", LabelHeader.NOME_DO_EVENTO, nameEvent), BaseFont.HELVETICA_BOLD, 8, 14, pdfElemment.NextPosition);
-
-        }
-
         private void StructureHeader()
         {
-            BasicDocumentData();
-         
             LogoImageHeader();
-          
+
         }
         #endregion
 
@@ -94,19 +76,12 @@ namespace PdfGenerator.Documents
 
         private void StructureFooter()
         {
-           
-            ImageFooter();
-        }
-
-        private void ImageFooter()
-        {
             if (this._footer.Logo != null)
             {
                 pdfElemment.AddImage(this._footer.Logo, -25, 0);
             }
         }
 
-      
         #endregion
 
     }

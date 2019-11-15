@@ -16,7 +16,8 @@ namespace PdfGenerator.Models.HeaderAndFooter
             this.NameEvent = nameEvent;
         }
 
-        public static HeaderFooterElemment Create(Image logo) => new HeaderFooterElemment(logo);
+        public static HeaderFooterElemment Create(Image logo)
+            => new HeaderFooterElemment(logo);
 
         
 
