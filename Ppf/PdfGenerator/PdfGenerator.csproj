@@ -38,19 +38,13 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Body\BodyConfig.cs" />
+    <Compile Include="Generator\Certificados.cs" />
     <Compile Include="Models\Body\BodyElemment.cs" />
     <Compile Include="Documents\GenericDocument.cs" />
     <Compile Include="Generator\DocumentGenerator.cs" />
     <Compile Include="Documents\EspecificDocument.cs" />
-    <Compile Include="Interface\IGenericStructure.cs" />
-    <Compile Include="Models\Body\Componets\Client.cs" />
-    <Compile Include="Models\Body\Componets\PrincipalTitle.cs" />
-    <Compile Include="Models\Body\Componets\TableValues.cs" />
-    <Compile Include="Models\Enumerator.cs" />
-    <Compile Include="Models\HeaderAndFooter\FooterElemment.cs" />
-    <Compile Include="Models\HeaderAndFooter\HeaderElemment.cs" />
-    <Compile Include="Models\HeaderAndFooter\HeaderFooterConfig.cs" />
+    <Compile Include="Models\Body\Componets\Title.cs" />
+    <Compile Include="Models\HeaderAndFooter\HeaderFooterElemment.cs" />
     <Compile Include="Models\Labels.cs" />
     <Compile Include="Util\PdfHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

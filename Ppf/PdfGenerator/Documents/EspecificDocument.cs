@@ -1,107 +1,103 @@
 ﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
 using PdfGenerator.Models.Body;
-using PdfGenerator.Models.Body.Components;
-using PdfGenerator.Models.Body.Componets;
-using PdfGenerator.Models.Label;
-using System.Collections.Generic;
 using System.IO;
 
 namespace PdfGenerator.Documents
 {
-    internal class EspecificDocument : GenericDocument
+    public class EspecificDocument : GenericDocument
     {
-        #region Properties
-        private Client _client;
-        private readonly List<BodyElemment> _body;
-        #endregion
+       
+        private string _nameDocument;
+     
 
-        internal EspecificDocument(MemoryStream ms, Document doc) : base(ms, doc)
+        private EspecificDocument(MemoryStream ms, Document doc) : base(ms, doc)
         {
-            _body = new List<BodyElemment>();
         }
 
-        internal void SetDocumentTitle(string title)
-        {
-            pdfElemment.TextCenter(title, BaseFont.HELVETICA_BOLD, 20, _doc.PageSize.Width / 2, 810);
-            pdfElemment.AdjustLines(1);
-        }
+        public static EspecificDocument Generate(MemoryStream ms, Document doc)
+            => new EspecificDocument(ms, doc);
 
-        internal MemoryStream GetPdf()
+        /// <summary>
+        /// Este método monta a estrutura do PDF na ordem
+        /// </summary>
+        public MemoryStream StructureDocument()
         {
+            DocumentTitleStructure();
             HeaderAndFooterStructure();
-            ClientStructure();
-            PrintBody();
-
-
-            //  pdfElemment.ShowLines();
-
-            //      pdfElemment.ShowGrid();
 
             FinishPdf();
 
             return _ms;
         }
 
-        private void PrintBody()
-        {
-            if (_body.Count > 0)
-            {
-                _body.ForEach(x => PrintBody(x));
 
-            }
+        /// <summary>
+        /// Adiciona um nome ao Documento, será o título superior. 
+        /// Deve ser utilizada a classe LabelDocumentTitle
+        /// </summary>
+        /// <param name="title"></param>
+        public void SetDocumentTitle(string title)
+        {
+            this._nameDocument = title;
         }
 
-        private void PrintBody(BodyElemment body)
+        /// <summary>
+        /// Utilizar este método dentro de StructureDocument() para indicar a escrita do nome do documento.
+        /// Deve ser o primeiro dentro de StructureDocument().
+        /// </summary>
+        private void DocumentTitleStructure()
         {
-            PrintBackgrounBody(body);
-         
-            pdfElemment.TextCenter(body.TitleBody, BaseFont.HELVETICA_BOLD, 18, _doc.PageSize.Width / 2, pdfElemment.NextPosition - 35);
-
-           
+            pdfElemment.TextCenter(_nameDocument, BaseFont.HELVETICA_BOLD, 20, pdfElemment.CenterX(), 810);
         }
 
-        private void PrintBackgrounBody(BodyConfig config)
+
+        /// <summary>
+        /// Este método irá configurar a barra que servirá de mooldura para os títulos caso o atributo.
+        /// Caso a Propriedade BodyConfi.ShowBoarder==true.
+        /// Possui valores padrão de cor de fundo ceinza, borda branca e o tamanho ocupa toda a largura da página,
+        /// caso estes valores venham nulos.
+        /// </summary>
+        /// <param name="config"> </param>
+        private void PrintBackgrounBody(BodyElemment config)
         {
             if (config.ShowBoarder)
             {
                 var spacing = config.Spacing != 0 ? config.Spacing : 1f;
                 var boarderWidth = config.BoarderWidth != 0 ? config.BoarderWidth : 1;
                 var radius = config.BoardRadius != 0 ? config.BoardRadius : 0;
-                var lowerLeftX = config.LowerLeftX != 0 ? config.LowerLeftX : (_doc.RightMargin - spacing);
-                var lowerLeftY = config.LowerLeftY != 0 ? config.LowerLeftY : (pdfElemment.NextPosition - 50);
+                var lowerLeftX = config.LowerLeftX != 0 ? config.LowerLeftX : _doc.RightMargin - spacing;
+                var lowerLeftY = config.LowerLeftY != 0 ? (config.LowerLeftY + pdfElemment.NextPosition) : pdfElemment.NextPosition;
                 var widthRectangle = config.WidthRectangle != 0 ? config.WidthRectangle : (_doc.Right - _doc.RightMargin - spacing);
                 var heigthRectangle = config.HeigthRectangle != 0 ? config.HeigthRectangle : 50 + spacing;
                 var boarderColor = config.BoarderColor ?? BaseColor.WHITE;
                 var backgroundColor = config.BackColor ?? BaseColor.GRAY;
+                var opacity = config.BackOpacity;
 
-                pdfElemment.Rectangle(lowerLeftX, lowerLeftY, widthRectangle, heigthRectangle, boarderWidth, radius, boarderColor, backgroundColor);
-                pdfElemment.HDivision(lowerLeftY);
+                pdfElemment.Rectangle(lowerLeftX, lowerLeftY, widthRectangle, heigthRectangle, boarderWidth, radius, boarderColor, backgroundColor, opacity);
+
+                if (config.ShowLine)
+                    pdfElemment.HDivision();
             }
         }
 
-        internal void AddToBody(BodyElemment body)
+        private void PageBreak(float minHigth)
         {
-            _body.Add(body);
+            pdfElemment.CheckPosition(minHigth);
+            PageBreak();
         }
 
-        internal void SetClient(Client client)
+        /// <summary>
+        /// ATENÇÃO: Este método ainda precisa ser validado com todos os elementos dos documentos.
+        ///
+        /// Utilizar este métodono início de todos os métodos que sejam responsáveis por escrever algo no PDF
+        /// </summary>
+        private void PageBreak()
         {
-            this._client = client;
-        }
-
-        private void ClientStructure()
-        {
-            var requester = _client.Requester ?? "Cliente Solicitante";
-            var cnpjRequester = _client.CnpjRequester ?? "88.888.888/8888-88";
-            var affiliate = _client.Affiliate ?? "Cliente Afiliado";
-            var cnpjAffiliate = _client.CnpjAffiliate ?? "88.888.888/8888-88";
-
-            pdfElemment.TextLeft(string.Format("{0} : {1}", LabelClient.CLIENTE_SOLICITANTE, requester), BaseFont.HELVETICA_BOLD, 8, 14, pdfElemment.NextPosition - 15);
-            pdfElemment.TextLeft(string.Format("{0} : {1}", LabelClient.CNPJ, cnpjRequester), BaseFont.HELVETICA_BOLD, 8, 14, pdfElemment.NextPosition);
-            pdfElemment.TextLeft(string.Format("{0} : {1}", LabelClient.AFILIADO_CONTRATADO, affiliate), BaseFont.HELVETICA_BOLD, 8, 14, pdfElemment.NextPosition);
-            pdfElemment.TextLeft(string.Format("{0} : {1}", LabelClient.CNPJ, cnpjAffiliate), BaseFont.HELVETICA_BOLD, 8, 14, pdfElemment.NextPosition);
-            pdfElemment.HLine();
+            if (pdfElemment.PageBreak)
+            {
+                NewPage();
+            }
         }
 
     }
