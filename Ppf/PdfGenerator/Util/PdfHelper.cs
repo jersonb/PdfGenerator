@@ -15,6 +15,7 @@ namespace PdfGenerator.Util
 
         private readonly Document _doc;
         private readonly PdfContentByte _contentByte;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Estilo", "IDE0044:Adicionar modificador somente leitura", Justification = "Não ajuda")]
         private PdfWriter pdf;
         public bool PageBreak { get; private set; }
         #endregion
@@ -328,16 +329,17 @@ namespace PdfGenerator.Util
 
             SetAtualPosition(Position - 90);
 
-            foreach (var image in images)
+            images.ForEach(imagem => 
             {
-                AddImage(image, GetPositionByIndex(i++), Position, (_doc.PageSize.Width / 4) - 10, 200);
+                AddImage(imagem, GetPositionByIndex(i++), Position, (_doc.PageSize.Width / 4) - 10, 200);
 
-                if (i == 4)
+                if (i.Equals(4))
                 {
                     i = 0;
                     Position -= 120;
                 }
-            }
+            });
+
 
             CheckPosition(200);
 
@@ -421,8 +423,10 @@ namespace PdfGenerator.Util
 
 
         public void SetAtualPosition(float position)
-            => TextCenter(" ", BaseFont.HELVETICA, 8, 25, this.Position = position);
-
+        {
+            var positionY = this.Position = position;
+            TextCenter(" ", BaseFont.HELVETICA, 8, 25, positionY);
+        }
 
         internal void NextPage()
         {
